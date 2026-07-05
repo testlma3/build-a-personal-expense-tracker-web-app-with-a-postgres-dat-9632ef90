@@ -218,6 +218,41 @@
     .amount-cell { font-weight: 600; color: #1f2937; }
     .empty-row td { text-align: center; color: #9ca3af; padding: 2.5rem; font-size: 0.95rem; }
     .loading { text-align: center; color: #9ca3af; padding: 2rem; }
+
+    /* Filter */
+    .filter-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .filter-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+    .filter-group select {
+      padding: 0.65rem 0.875rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, background-color 0.2s;
+      background: white;
+      min-width: 150px;
+    }
+    .filter-group select:focus {
+      border-color: #4f46e5;
+      background: white;
+    }
   </style>
 </head>
 <body>
@@ -226,6 +261,7 @@
     const { useState, useEffect, useCallback } = React;
 
     const CATEGORIES = ['food', 'transport', 'other'];
+    const ENTERTAINMENT = 'entertainment';
 
     function formatDate(iso) {
       if (!iso) return '—';
@@ -246,6 +282,7 @@
       const [submitting, setSubmitting] = useState(false);
       const [form, setForm] = useState({ description: '', amount: '', category: 'food' });
       const [formError, setFormError] = useState('');
+      const [filterCategory, setFilterCategory] = useState('all');
 
       const fetchExpenses = useCallback(async () => {
         setLoading(true);
@@ -307,6 +344,11 @@
           setError('Delete failed: ' + e.message);
         }
       };
+
+      // Filter expenses
+      const filteredExpenses = filterCategory === 'all'
+        ? expenses
+        : expenses.filter(ex => ex.category === filterCategory);
 
       // Summary
       const summary = CATEGORIES.reduce((acc, cat) => {
@@ -389,8 +431,39 @@
             <div className="card">
               <h2>All Expenses</h2>
               {error && <div className="error-banner">{error}</div>}
+              
+              {/* Filter Row */}
+              <div className="filter-row">
+                <div className="filter-group">
+                  <label>Category Filter</label>
+                  <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                    <option value="all">All</option>
+                    {CATEGORIES.map(cat => (
+                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               {loading ? (
                 <div className="loading">Loading expenses…</div>
+              ) : filteredExpenses.length === 0 ? (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Amount</th>
+                      <th>Category</th>
+                      <th>Added</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="empty-row">
+                      <td colSpan="5">No expenses yet. Add one above!</td>
+                    </tr>
+                  </tbody>
+                </table>
               ) : (
                 <div className="table-wrapper">
                   <table>
@@ -404,21 +477,22 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {expenses.length === 0 ? (
-                        <tr className="empty-row">
-                          <td colSpan={5}>No expenses yet. Add one above!</td>
+                      {filteredExpenses.map(ex => (
+                        <tr key={ex.id}>
+                          <td>{ex.description}</td>
+                          <td className="amount-cell">{formatAmount(ex.amount)}</td>
+                          <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
+                          <td>{formatDate(ex.created_at)}</td>
+                          <td>
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => handleDelete(ex.id)}
+                            >
+                              Delete
+                            </button>
+                          </td>
                         </tr>
-                      ) : (
-                        expenses.map(ex => (
-                          <tr key={ex.id}>
-                            <td>{ex.description}</td>
-                            <td className="amount-cell">{formatAmount(ex.amount)}</td>
-                            <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
-                            <td>{formatDate(ex.created_at)}</td>
-                            <td><button className="btn btn-danger" onClick={() => handleDelete(ex.id)}>Delete</button></td>
-                          </tr>
-                        ))
-                      )}
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -429,7 +503,7 @@
       );
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
