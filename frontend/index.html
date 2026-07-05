@@ -10,62 +10,112 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #f0f4f8;
-      color: #1a202c;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
       min-height: 100vh;
     }
     header {
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      background: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
       color: white;
-      padding: 1.5rem 2rem;
-      box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
-    header p { opacity: 0.85; margin-top: 0.25rem; font-size: 0.95rem; }
-    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.3rem;
+    }
+    header p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
 
-    /* Form */
+    /* Card */
     .card {
       background: white;
       border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
     }
-    .card h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #4f46e5; }
+    .card h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #4f46e5;
+    }
+
+    /* Form */
     .form-row {
       display: flex;
-      gap: 0.75rem;
+      gap: 1rem;
       flex-wrap: wrap;
       align-items: flex-end;
     }
-    .form-group { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 140px; }
-    .form-group label { font-size: 0.8rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
-    .form-group input, .form-group select {
-      padding: 0.55rem 0.75rem;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 140px;
+    }
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+    .form-group input,
+    .form-group select {
+      padding: 0.65rem 0.875rem;
       border: 1.5px solid #e5e7eb;
       border-radius: 8px;
       font-size: 0.95rem;
+      font-family: inherit;
       outline: none;
-      transition: border-color 0.2s;
-      background: #fafafa;
+      transition: border-color 0.2s, background-color 0.2s;
+      background: white;
     }
-    .form-group input:focus, .form-group select:focus { border-color: #4f46e5; background: white; }
+    .form-group input::placeholder {
+      color: #d1d5db;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #4f46e5;
+      background: white;
+    }
     .btn {
-      padding: 0.6rem 1.4rem;
+      padding: 0.65rem 1.5rem;
       border: none;
       border-radius: 8px;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
     }
     .btn:active { transform: scale(0.97); }
-    .btn-primary { background: #4f46e5; color: white; }
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+    }
     .btn-primary:hover { background: #4338ca; }
     .btn-primary:disabled { background: #a5b4fc; cursor: not-allowed; }
-    .btn-danger { background: #fee2e2; color: #dc2626; font-size: 0.8rem; padding: 0.35rem 0.75rem; }
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+    }
     .btn-danger:hover { background: #fca5a5; }
 
     /* Error */
@@ -82,43 +132,90 @@
     /* Summary */
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
     }
     .summary-item {
       border-radius: 10px;
-      padding: 1rem 1.25rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.3rem;
+      gap: 0.5rem;
+      border-left: 4px solid transparent;
     }
-    .summary-item.food    { background: #ecfdf5; border-left: 4px solid #10b981; }
-    .summary-item.transport { background: #eff6ff; border-left: 4px solid #3b82f6; }
-    .summary-item.other   { background: #faf5ff; border-left: 4px solid #8b5cf6; }
-    .summary-item.total   { background: #f9fafb; border-left: 4px solid #6b7280; }
-    .summary-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; }
-    .summary-amount { font-size: 1.5rem; font-weight: 700; color: #1a202c; }
+    .summary-item.food {
+      background: #ecfdf5;
+      border-left-color: #10b981;
+    }
+    .summary-item.transport {
+      background: #eff6ff;
+      border-left-color: #3b82f6;
+    }
+    .summary-item.other {
+      background: #faf5ff;
+      border-left-color: #8b5cf6;
+    }
+    .summary-item.total {
+      background: #f9fafb;
+      border-left-color: #6b7280;
+    }
+    .summary-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+    }
+    .summary-amount {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
 
     /* Table */
-    .table-wrapper { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
-    thead tr { background: #f9fafb; border-bottom: 2px solid #e5e7eb; }
-    thead th { padding: 0.75rem 1rem; text-align: left; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
-    tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.15s; }
-    tbody tr:hover { background: #f9fafb; }
-    tbody td { padding: 0.75rem 1rem; }
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+    }
+    thead tr {
+      background: #f9fafb;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    thead th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+    tbody tr {
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.15s;
+    }
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+    tbody td {
+      padding: 0.875rem 1rem;
+    }
     .badge {
       display: inline-block;
-      padding: 0.2rem 0.65rem;
+      padding: 0.25rem 0.75rem;
       border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: capitalize;
     }
-    .badge.food      { background: #d1fae5; color: #065f46; }
+    .badge.food { background: #d1fae5; color: #065f46; }
     .badge.transport { background: #dbeafe; color: #1e40af; }
-    .badge.other     { background: #ede9fe; color: #5b21b6; }
-    .amount-cell { font-weight: 600; color: #1a202c; }
+    .badge.other { background: #ede9fe; color: #5b21b6; }
+    .amount-cell { font-weight: 600; color: #1f2937; }
     .empty-row td { text-align: center; color: #9ca3af; padding: 2.5rem; font-size: 0.95rem; }
     .loading { text-align: center; color: #9ca3af; padding: 2rem; }
   </style>
@@ -318,13 +415,7 @@
                             <td className="amount-cell">{formatAmount(ex.amount)}</td>
                             <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
                             <td>{formatDate(ex.created_at)}</td>
-                            <td>
-                              <button
-                                className="btn btn-danger"
-                                onClick={() => handleDelete(ex.id)}
-                                title="Delete expense"
-                              >Delete</button>
-                            </td>
+                            <td><button className="btn btn-danger" onClick={() => handleDelete(ex.id)}>Delete</button></td>
                           </tr>
                         ))
                       )}
@@ -333,13 +424,12 @@
                 </div>
               )}
             </div>
-
           </div>
         </div>
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
