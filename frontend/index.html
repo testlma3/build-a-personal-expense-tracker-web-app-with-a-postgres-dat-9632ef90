@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+    }
+    header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
+    header p { opacity: 0.85; margin-top: 0.25rem; font-size: 0.95rem; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+
+    /* Form */
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #4f46e5; }
+    .form-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 140px; }
+    .form-group label { font-size: 0.8rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input, .form-group select {
+      padding: 0.55rem 0.75rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fafafa;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: #4f46e5; background: white; }
+    .btn {
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #4f46e5; color: white; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-primary:disabled { background: #a5b4fc; cursor: not-allowed; }
+    .btn-danger { background: #fee2e2; color: #dc2626; font-size: 0.8rem; padding: 0.35rem 0.75rem; }
+    .btn-danger:hover { background: #fca5a5; }
+
+    /* Error */
+    .error-banner {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* Summary */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .summary-item {
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .summary-item.food    { background: #ecfdf5; border-left: 4px solid #10b981; }
+    .summary-item.transport { background: #eff6ff; border-left: 4px solid #3b82f6; }
+    .summary-item.other   { background: #faf5ff; border-left: 4px solid #8b5cf6; }
+    .summary-item.total   { background: #f9fafb; border-left: 4px solid #6b7280; }
+    .summary-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; }
+    .summary-amount { font-size: 1.5rem; font-weight: 700; color: #1a202c; }
+
+    /* Table */
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+    thead tr { background: #f9fafb; border-bottom: 2px solid #e5e7eb; }
+    thead th { padding: 0.75rem 1rem; text-align: left; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
+    tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.15s; }
+    tbody tr:hover { background: #f9fafb; }
+    tbody td { padding: 0.75rem 1rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .badge.food      { background: #d1fae5; color: #065f46; }
+    .badge.transport { background: #dbeafe; color: #1e40af; }
+    .badge.other     { background: #ede9fe; color: #5b21b6; }
+    .amount-cell { font-weight: 600; color: #1a202c; }
+    .empty-row td { text-align: center; color: #9ca3af; padding: 2.5rem; font-size: 0.95rem; }
+    .loading { text-align: center; color: #9ca3af; padding: 2rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    const CATEGORIES = ['food', 'transport', 'other'];
+
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try {
+        return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      } catch { return iso; }
+    }
+
+    function formatAmount(val) {
+      const n = parseFloat(val);
+      return isNaN(n) ? '$0.00' : '$' + n.toFixed(2);
+    }
+
+    function App() {
+      const [expenses, setExpenses] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState('');
+      const [submitting, setSubmitting] = useState(false);
+      const [form, setForm] = useState({ description: '', amount: '', category: 'food' });
+      const [formError, setFormError] = useState('');
+
+      const fetchExpenses = useCallback(async () => {
+        setLoading(true);
+        setError('');
+        try {
+          const res = await fetch('/api/expenses');
+          if (!res.ok) throw new Error(`Server error ${res.status}`);
+          const data = await res.json();
+          setExpenses(Array.isArray(data) ? data : []);
+        } catch (e) {
+          setError('Could not load expenses. ' + e.message);
+          setExpenses([]);
+        } finally {
+          setLoading(false);
+        }
+      }, []);
+
+      useEffect(() => { fetchExpenses(); }, [fetchExpenses]);
+
+      const handleChange = (e) => {
+        setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+        setFormError('');
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        const desc = form.description.trim();
+        const amt = parseFloat(form.amount);
+        if (!desc) { setFormError('Description is required.'); return; }
+        if (isNaN(amt) || amt <= 0) { setFormError('Enter a valid positive amount.'); return; }
+        if (!CATEGORIES.includes(form.category)) { setFormError('Select a valid category.'); return; }
+        setSubmitting(true);
+        setFormError('');
+        try {
+          const res = await fetch('/api/expenses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: desc, amount: amt, category: form.category }),
+          });
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            throw new Error(body.error || `Server error ${res.status}`);
+          }
+          setForm({ description: '', amount: '', category: 'food' });
+          await fetchExpenses();
+        } catch (e) {
+          setFormError('Failed to add expense: ' + e.message);
+        } finally {
+          setSubmitting(false);
+        }
+      };
+
+      const handleDelete = async (id) => {
+        try {
+          const res = await fetch(`/api/expenses/${id}`, { method: 'DELETE' });
+          if (!res.ok) throw new Error(`Server error ${res.status}`);
+          setExpenses(prev => prev.filter(ex => ex.id !== id));
+        } catch (e) {
+          setError('Delete failed: ' + e.message);
+        }
+      };
+
+      // Summary
+      const summary = CATEGORIES.reduce((acc, cat) => {
+        acc[cat] = expenses
+          .filter(ex => ex.category === cat)
+          .reduce((s, ex) => s + parseFloat(ex.amount || 0), 0);
+        return acc;
+      }, {});
+      const total = Object.values(summary).reduce((s, v) => s + v, 0);
+
+      return (
+        <div>
+          <header>
+            <h1>💸 Expense Tracker</h1>
+            <p>Track your spending across food, transport, and more.</p>
+          </header>
+          <div className="container">
+
+            {/* Add Expense Form */}
+            <div className="card">
+              <h2>Add New Expense</h2>
+              {formError && <div className="error-banner">{formError}</div>}
+              <form onSubmit={handleSubmit}>
+                <div className="form-row">
+                  <div className="form-group" style={{flex: 2, minWidth: 200}}>
+                    <label>Description</label>
+                    <input
+                      name="description"
+                      value={form.description}
+                      onChange={handleChange}
+                      placeholder="e.g. Grocery run"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Amount ($)</label>
+                    <input
+                      name="amount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      value={form.amount}
+                      onChange={handleChange}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Category</label>
+                    <select name="category" value={form.category} onChange={handleChange}>
+                      {CATEGORIES.map(c => (
+                        <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button className="btn btn-primary" type="submit" disabled={submitting}>
+                    {submitting ? 'Adding…' : '+ Add'}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Summary */}
+            <div className="card">
+              <h2>Spend Summary</h2>
+              <div className="summary-grid">
+                {CATEGORIES.map(cat => (
+                  <div key={cat} className={`summary-item ${cat}`}>
+                    <span className="summary-label">{cat}</span>
+                    <span className="summary-amount">{formatAmount(summary[cat])}</span>
+                  </div>
+                ))}
+                <div className="summary-item total">
+                  <span className="summary-label">Total</span>
+                  <span className="summary-amount">{formatAmount(total)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Expenses Table */}
+            <div className="card">
+              <h2>All Expenses</h2>
+              {error && <div className="error-banner">{error}</div>}
+              {loading ? (
+                <div className="loading">Loading expenses…</div>
+              ) : (
+                <div className="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Added</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {expenses.length === 0 ? (
+                        <tr className="empty-row">
+                          <td colSpan={5}>No expenses yet. Add one above!</td>
+                        </tr>
+                      ) : (
+                        expenses.map(ex => (
+                          <tr key={ex.id}>
+                            <td>{ex.description}</td>
+                            <td className="amount-cell">{formatAmount(ex.amount)}</td>
+                            <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
+                            <td>{formatDate(ex.created_at)}</td>
+                            <td>
+                              <button
+                                className="btn btn-danger"
+                                onClick={() => handleDelete(ex.id)}
+                                title="Delete expense"
+                              >Delete</button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
