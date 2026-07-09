@@ -158,6 +158,7 @@
     .summary-item.total {
       background: #f9fafb;
       border-left-color: #6b7280;
+      border-top: 3px solid #4f46e5;
     }
     .summary-label {
       font-size: 0.75rem;
@@ -416,13 +417,13 @@
               <div className="summary-grid">
                 {CATEGORIES.map(cat => (
                   <div key={cat} className={`summary-item ${cat}`}>
-                    <div className="summary-label">{cat}</div>
-                    <div className="summary-amount">{formatAmount(summary[cat])}</div>
+                    <span className="summary-label">{cat}</span>
+                    <span className="summary-amount">{formatAmount(summary[cat])}</span>
                   </div>
                 ))}
                 <div className="summary-item total">
-                  <div className="summary-label">This month</div>
-                  <div className="summary-amount">{formatAmount(total)}</div>
+                  <span className="summary-label">Total</span>
+                  <span className="summary-amount">{formatAmount(total)}</span>
                 </div>
               </div>
             </div>
@@ -435,17 +436,19 @@
                 <div className="loading">Loading...</div>
               ) : (
                 <>
-                  <div className="filter-row">
-                    <div className="filter-group">
-                      <label>Filter by Category</label>
-                      <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-                        <option value="all">All Categories</option>
-                        {CATEGORIES.map(c => (
-                          <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
-                        ))}
-                      </select>
+                  {expenses.length > 0 && (
+                    <div className="filter-row">
+                      <div className="filter-group">
+                        <label>Filter by Category</label>
+                        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                          <option value="all">All</option>
+                          {CATEGORIES.map(c => (
+                            <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="table-wrapper">
                     <table>
                       <thead>
@@ -458,7 +461,11 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredExpenses.length > 0 ? (
+                        {filteredExpenses.length === 0 ? (
+                          <tr className="empty-row">
+                            <td colSpan="5">No expenses yet. Add one above!</td>
+                          </tr>
+                        ) : (
                           filteredExpenses.map(ex => (
                             <tr key={ex.id}>
                               <td>{ex.description}</td>
@@ -472,10 +479,6 @@
                               </td>
                             </tr>
                           ))
-                        ) : (
-                          <tr className="empty-row">
-                            <td colSpan="5">No expenses yet. Add one above!</td>
-                          </tr>
                         )}
                       </tbody>
                     </table>
@@ -488,7 +491,7 @@
       );
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>
