@@ -404,98 +404,83 @@
                     </select>
                   </div>
                   <button className="btn btn-primary" type="submit" disabled={submitting}>
-                    {submitting ? 'Adding…' : '+ Add'}
+                    + Add
                   </button>
                 </div>
               </form>
             </div>
 
-            {/* Summary */}
+            {/* Spend Summary */}
             <div className="card">
               <h2>Spend Summary</h2>
               <div className="summary-grid">
                 {CATEGORIES.map(cat => (
                   <div key={cat} className={`summary-item ${cat}`}>
-                    <span className="summary-label">{cat}</span>
-                    <span className="summary-amount">{formatAmount(summary[cat])}</span>
+                    <div className="summary-label">{cat}</div>
+                    <div className="summary-amount">{formatAmount(summary[cat])}</div>
                   </div>
                 ))}
                 <div className="summary-item total">
-                  <span className="summary-label">Total</span>
-                  <span className="summary-amount">{formatAmount(total)}</span>
+                  <div className="summary-label">This month</div>
+                  <div className="summary-amount">{formatAmount(total)}</div>
                 </div>
               </div>
             </div>
 
-            {/* Expenses Table */}
+            {/* All Expenses */}
             <div className="card">
               <h2>All Expenses</h2>
               {error && <div className="error-banner">{error}</div>}
-              
-              {/* Filter Row */}
-              <div className="filter-row">
-                <div className="filter-group">
-                  <label>Category Filter</label>
-                  <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-                    <option value="all">All</option>
-                    {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
               {loading ? (
-                <div className="loading">Loading expenses…</div>
-              ) : filteredExpenses.length === 0 ? (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Description</th>
-                      <th>Amount</th>
-                      <th>Category</th>
-                      <th>Added</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="empty-row">
-                      <td colSpan="5">No expenses yet. Add one above!</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div className="loading">Loading...</div>
               ) : (
-                <div className="table-wrapper">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Description</th>
-                        <th>Amount</th>
-                        <th>Category</th>
-                        <th>Added</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredExpenses.map(ex => (
-                        <tr key={ex.id}>
-                          <td>{ex.description}</td>
-                          <td className="amount-cell">{formatAmount(ex.amount)}</td>
-                          <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
-                          <td>{formatDate(ex.created_at)}</td>
-                          <td>
-                            <button
-                              className="btn btn-danger"
-                              onClick={() => handleDelete(ex.id)}
-                            >
-                              Delete
-                            </button>
-                          </td>
+                <>
+                  <div className="filter-row">
+                    <div className="filter-group">
+                      <label>Filter by Category</label>
+                      <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                        <option value="all">All Categories</option>
+                        {CATEGORIES.map(c => (
+                          <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Description</th>
+                          <th>Amount</th>
+                          <th>Category</th>
+                          <th>Added</th>
+                          <th style={{ width: '60px' }}>Action</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {filteredExpenses.length > 0 ? (
+                          filteredExpenses.map(ex => (
+                            <tr key={ex.id}>
+                              <td>{ex.description}</td>
+                              <td className="amount-cell">{formatAmount(ex.amount)}</td>
+                              <td><span className={`badge ${ex.category}`}>{ex.category}</span></td>
+                              <td>{formatDate(ex.created_at)}</td>
+                              <td>
+                                <button className="btn btn-danger" onClick={() => handleDelete(ex.id)}>
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr className="empty-row">
+                            <td colSpan="5">No expenses yet. Add one above!</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -503,7 +488,7 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
