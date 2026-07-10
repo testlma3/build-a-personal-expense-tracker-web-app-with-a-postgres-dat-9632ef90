@@ -6,7 +6,7 @@ const router = Router();
 // GET /api/expenses — list all expenses newest first
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const result = await pool.query('SELECT * FROM expenses ORDER BY created_at DESC');
+    const result = await pool.query('SELECT id, description, amount FROM expenses ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (err: any) {
     console.log(JSON.stringify({ level: 'error', route: 'GET /expenses', message: err.message }));
@@ -32,7 +32,7 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     const result = await pool.query(
-      'INSERT INTO expenses (description, amount, category) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO expenses (description, amount, category) VALUES ($1, $2, $3) RETURNING id, description, amount',
       [description.trim(), amountNum, category]
     );
     console.log(JSON.stringify({ level: 'info', route: 'POST /expenses', id: result.rows[0].id }));
