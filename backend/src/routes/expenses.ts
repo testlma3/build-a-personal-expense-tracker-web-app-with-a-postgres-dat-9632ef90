@@ -6,7 +6,7 @@ const router = Router();
 // GET /api/expenses — list all expenses newest first
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const result = await pool.query('SELECT id, description, amount FROM expenses ORDER BY created_at DESC');
+    const result = await pool.query('SELECT id, description, amount, category, created_at FROM expenses ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (err: any) {
     console.log(JSON.stringify({ level: 'error', route: 'GET /expenses', message: err.message }));
